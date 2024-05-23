@@ -12,7 +12,7 @@ def chatbot_helper(student) -> dict:
         "question": student["question"],
     }
 
-@router.post("/chatbot", response_model=ResponseModel, summary="Generate an answer using OpenAI")
+@router.post("/chatbot", summary="Generate an answer using OpenAI")
 async def create_answer(chatbot: GenerateAnswer):
     """
     Crea una respuesta utilizando OpenAI y la almacena en la base de datos.
@@ -52,7 +52,7 @@ async def create_answer(chatbot: GenerateAnswer):
 
 
 
-@router.get("/chatbot", response_model=ResponseModel, summary="Get all conversation messages")
+@router.get("/chatbot", summary="Get all conversation messages")
 async def get_all_answers():
     """
     Obtiene todos los mensajes de la conversación almacenados en la base de datos.
