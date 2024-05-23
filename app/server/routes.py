@@ -13,7 +13,7 @@ def chatbot_helper(student) -> dict:
         "question": student["question"],
     }
 
-@router.post("/chatbot")
+@router.post("/chatbot", response_model=ResponseModel, summary="Generate an answer using OpenAI")
 async def create_answer(chatbot: GenerateAnswer):
     try:
         response =  openai_client.chat.completions.create(
@@ -39,13 +39,17 @@ async def create_answer(chatbot: GenerateAnswer):
 
 
 
-@router.get("/chatbot")
+@router.get("/chatbot", response_model=ResponseModel, summary="Get all conversation messages")
 async def get_all_answers():
     try:
         chatbot_array = []
         async for item in chatbox_collection.find():
             chatbot_array.append(chatbot_helper(item))
-        return ResponseModel(chatbot_array, "Get all collections")
-    
+
+        if chatbot_array: 
+            return ResponseModel(chatbot_array, "Get all collections")
+        else: 
+            return ResponseModel(chatbot_array, "Collections is empty.")
+            
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

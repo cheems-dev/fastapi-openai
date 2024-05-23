@@ -1,9 +1,7 @@
 from pydantic import BaseModel, Field
+from typing import List
 
 class GenerateAnswer(BaseModel):
-    """
-    Container for a single value.
-    """
     answer: str = Field(...)
     class Config:
         schema_extra = {
@@ -17,9 +15,12 @@ class ChatBotModel(BaseModel):
     answer: str
     response: str
    
-def ResponseModel(data, message):
+def ResponseModel(data: List[ChatBotModel], message):
     return {
         "data": [data],
         "code": 200,
         "message": message,
     }
+
+def ErrorResponseModel(error, code, message):
+    return {"error": error, "code": code, "message": message}
