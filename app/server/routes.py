@@ -6,6 +6,13 @@ import json
 
 router = APIRouter()
 
+def chatbot_helper(student) -> dict:
+    return {
+        "id": str(student["_id"]),
+        "answer": student["answer"],
+        "question": student["question"],
+    }
+
 @router.post("/chatbot")
 async def create_answer(chatbot: GenerateAnswer):
     try:
@@ -24,17 +31,13 @@ async def create_answer(chatbot: GenerateAnswer):
         }
 
         response = await chatbox_collection.insert_one(payload)
-        return response["inserted_id"]
+        chatbot_find = await chatbox_collection.find_one({"_id": response.inserted_id})
+        return ResponseModel(chatbot_helper(chatbot_find), "Create new collection")
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-def chatbot_helper(student) -> dict:
-    return {
-        "id": str(student["_id"]),
-        "answer": student["answer"],
-        "question": student["question"],
-    }
+
 
 @router.get("/chatbot")
 async def get_all_answers():
@@ -42,7 +45,7 @@ async def get_all_answers():
         chatbot_array = []
         async for item in chatbox_collection.find():
             chatbot_array.append(chatbot_helper(item))
-        return ResponseModel(chatbot_array, "Historial get all answers!")
+        return ResponseModel(chatbot_array, "Get all collections")
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
